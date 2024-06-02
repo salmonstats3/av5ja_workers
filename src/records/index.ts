@@ -5,6 +5,7 @@ import { decode } from '@/utils/decode'
 import dayjs from 'dayjs'
 import { Effect, Either } from 'effect'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 export const records = new Hono<{ Bindings: Bindings }>()
 

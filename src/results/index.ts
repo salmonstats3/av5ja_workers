@@ -3,6 +3,7 @@ import type { Bindings } from '@/utils/bindings'
 import { decode } from '@/utils/decode'
 import { Effect, Either } from 'effect'
 import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 
 export const results = new Hono<{ Bindings: Bindings }>()
 
@@ -34,6 +35,7 @@ results.post('/', async (c) => {
   const result = decode(CoopResult.Query, body)
 
   if (Either.isLeft(result)) {
+    console.log(result)
     // @ts-ignore
     throw new HTTPException(400, { message: 'Bad Request', res: c.res, cause: result.left.error.errors })
   }
