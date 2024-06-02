@@ -1,0 +1,9 @@
+name = "av5ja"
+main = "src/index.ts"
+compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2024-05-13"
+
+kv_namespaces = [
+  { binding = "Schedule", id = "c520e398008648e2a3a7769cc5c739de", preview_id = "e09c635e09c04d3aa4a43d409aa0a841" },
+  { binding = "Result", id = "4e90622a3c6f4d4eb7480c7b025bea0b", preview_id = "d162c2534873462498aa44c69e98b4ad" },
+]

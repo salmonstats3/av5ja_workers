@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext"],
+    "types": [
+      "@cloudflare/workers-types",
+      "@types/node",
+      "@types/bun",
+      "@types/jest",
+      "jest-environment-miniflare/globals"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "strictPropertyInitialization": false,
+    "exactOptionalPropertyTypes": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
