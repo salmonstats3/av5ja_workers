@@ -1,0 +1,30 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+      - '!master'
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: 1.1.10
+          no-cache: false
+
+      - name: Install
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+
+      - name: Format and Lint
+        run: |
+          bun run format
+          bun run lint

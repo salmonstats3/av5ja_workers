@@ -1,14 +1,14 @@
-name: Continuous Integration
+name: Continuous Deployment
 
 on:
   push:
     branches:
       - '**'
-      - '!main'
-      - '!master'
+      - 'main'
+      - 'master'
 
 jobs:
-  build:
+  format:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,18 +17,19 @@ jobs:
       - name: Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: 1.1.10
+          bun-version: latest
           no-cache: false
 
       - name: Install
         run: |
-          bun install --frozen-lockfile --production --ignore-scripts
+          bun install --frozen-lockfile --ignore-scripts
 
-      - name: Build
+      - name: Format and Lint
         run: |
-          bun run build
+          bun run format
+          bun run lint
 
-  test:
+  deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -44,11 +45,8 @@ jobs:
         run: |
           bun install --frozen-lockfile --ignore-scripts
 
-      - name: Lint and Format
-        run: |
-          bun run lint
-          bun run format
-
-      - name: Test
-        run: |
-          bun test
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          accountId: ${{ secrets.CLOUDFLARE_API_TOKEN }

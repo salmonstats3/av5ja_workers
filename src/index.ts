@@ -32,13 +32,13 @@ app.onError((error, c) => {
   return c.json({ message: 'Internal Server Error' }, 500)
 })
 
-// app.get(
-//   '*',
-//   cache({
-//     cacheName: 'av5ja',
-//     cacheControl: 'max-age=3600'
-//   })
-// )
+app.get(
+  '*',
+  cache({
+    cacheName: 'av5ja',
+    cacheControl: 'max-age=3600'
+  })
+)
 
 app.route('/v3/schedules', schedules)
 app.route('/v3/results', results)
