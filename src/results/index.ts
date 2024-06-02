@@ -35,7 +35,6 @@ results.post('/', async (c) => {
   const result = decode(CoopResult.Query, body)
 
   if (Either.isLeft(result)) {
-    console.log(result)
     // @ts-ignore
     throw new HTTPException(400, { message: 'Bad Request', res: c.res, cause: result.left.error.errors })
   }

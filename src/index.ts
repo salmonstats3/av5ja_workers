@@ -26,6 +26,7 @@ app.use(logger())
 app.use(csrf())
 app.use('*', cors())
 app.onError((error, c) => {
+  console.error(error)
   if (error instanceof HTTPException) {
     return c.json({ message: error.message, description: error.cause }, error.status)
   }
