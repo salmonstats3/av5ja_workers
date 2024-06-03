@@ -1,5 +1,3 @@
-import { context } from '@effect/schema/FastCheck'
-import { swaggerUI as SwaggerUI } from '@hono/swagger-ui'
 import { OpenAPIHono as Hono } from '@hono/zod-openapi'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -12,7 +10,7 @@ import { logger } from 'hono/logger'
 import { histories } from './histories'
 import { records } from './records'
 import { results } from './results'
-import { schedules } from './schedules'
+import { schedules, update } from './schedules'
 import type { Bindings } from './utils/bindings'
 import { version } from './version'
 
@@ -25,6 +23,7 @@ dayjs.tz.setDefault('Asia/Tokyo')
 app.use(logger())
 app.use(csrf())
 app.use('*', cors())
+// app.use(compress());
 app.onError((error, c) => {
   console.error(error)
   if (error instanceof HTTPException) {
@@ -47,7 +46,12 @@ app.route('/v1/histories', histories)
 app.route('/v1/records', records)
 app.route('/v1/version', version)
 
+const handler: ExportedHandlerScheduledHandler = async (event, env, ctx) => {
+  ctx.waitUntil(update())
+}
+
 export default {
   port: 3000,
-  fetch: app.fetch
+  fetch: app.fetch,
+  handler
 }
