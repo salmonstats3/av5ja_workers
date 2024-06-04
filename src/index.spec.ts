@@ -1,8 +1,8 @@
+import { Effect, Either } from 'effect'
 import { unstable_dev } from 'wrangler'
 import type { UnstableDevWorker } from 'wrangler'
 import { app } from './index'
 import { update } from './schedules'
-import { Effect, Either } from 'effect'
 
 describe('Cloudflare Workers', async () => {
   let worker: UnstableDevWorker

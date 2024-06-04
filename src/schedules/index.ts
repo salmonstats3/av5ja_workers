@@ -1,18 +1,36 @@
-import type { Bindings } from '@/utils/bindings'
-import { type Env, Hono } from 'hono'
-import * as Http from '@effect/platform/HttpClient'
 import { CoopSchedule, ThunderSchedule } from '@/models/schedule.dto'
+import type { Bindings } from '@/utils/bindings'
+import { KVCache } from '@/utils/cache'
+import * as Http from '@effect/platform/HttpClient'
+import dayjs, { Dayjs } from 'dayjs'
 import { Effect } from 'effect'
-import dayjs from 'dayjs'
+import { type Context, type Env, Hono } from 'hono'
 
 export const schedules = new Hono<{ Bindings: Bindings }>()
 
-schedules.get('/', async (c) => {
+const store = async (c: Context<{ Bindings: Bindings }>): Promise<CoopSchedule.Response[]> => {
+  console.log('[CACHE]: FETCH')
   const keys: string[] = (await c.env.Schedule.list()).keys.map((key) => key.name)
-  const schedules = (await Promise.all(keys.map((key) => c.env.Schedule.get(key))))
+  const schedules: CoopSchedule.Response[] = (await Promise.all(keys.map((key) => c.env.Schedule.get(key))))
     .filter((value) => value !== null)
     .map((value) => JSON.parse(value))
     .sort((a, b) => dayjs(b.startTime).utc().unix() - dayjs(a.startTime).utc().unix())
+  await KVCache.put(c, schedules)
+  return schedules
+}
+
+schedules.get('/', async (c) => {
+  const { cache, isExpired } = await KVCache.get(c)
+  if (isExpired) {
+    console.log('[CACHE]: EXPIRED/MISS')
+    c.executionCtx.waitUntil(store(c))
+  }
+  if (cache !== null) {
+    console.log('[CACHE]: HIT')
+    return c.json({ schedules: JSON.parse(cache) })
+  }
+  // 最初の一回だけここが実行される
+  const schedules: CoopSchedule.Response[] = await store(c)
   return c.json({ schedules: schedules })
 })
 
