@@ -30,7 +30,7 @@ jobs:
           bun run lint
 
   deploy:
-    needs: build
+    needs: format
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
