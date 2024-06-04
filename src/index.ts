@@ -13,8 +13,9 @@ import { results } from './results'
 import { schedules, update } from './schedules'
 import type { Bindings } from './utils/bindings'
 import { version } from './version'
+import { scheduled } from './handler'
 
-const app = new Hono<{ Bindings: Bindings }>()
+export const app = new Hono<{ Bindings: Bindings }>()
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -46,12 +47,8 @@ app.route('/v1/histories', histories)
 app.route('/v1/records', records)
 app.route('/v1/version', version)
 
-const handler: ExportedHandlerScheduledHandler = async (event, env, ctx) => {
-  ctx.waitUntil(update())
-}
-
 export default {
   port: 3000,
   fetch: app.fetch,
-  handler
+  scheduled
 }

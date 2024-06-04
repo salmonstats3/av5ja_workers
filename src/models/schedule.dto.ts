@@ -155,6 +155,23 @@ export namespace CoopSchedule {
       this.rareWeapons = options.rareWeapons
       this.weaponList = options.weaponList
     }
+
+    static from(schedule: ThunderSchedule.Query): CoopSchedule.Response[] {
+      return [
+        // @ts-ignore
+        schedule.Normal.map(
+          (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.REGULAR, rule: CoopRule.REGULAR })
+        ),
+        // @ts-ignore
+        schedule.BigRun.map(
+          (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.REGULAR, rule: CoopRule.BIG_RUN })
+        ),
+        // @ts-ignore
+        schedule.TeamContest.map(
+          (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.LIMITED, rule: CoopRule.TEAM_CONTEST })
+        )
+      ].flat()
+    }
   }
 
   export type Query = typeof Query.Type

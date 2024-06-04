@@ -12,8 +12,7 @@
       "@cloudflare/workers-types",
       "@types/node",
       "@types/bun",
-      "@types/jest",
-      "jest-environment-miniflare/globals"
+      "vitest/globals"
     ],
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",

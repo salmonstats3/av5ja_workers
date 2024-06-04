@@ -21,7 +21,9 @@
     "format": "bunx @biomejs/biome format src",
     "format:fix": "bunx @biomejs/biome format --write src",
     "prepare": "husky",
-    "deploy": "bunx wrangler deploy"
+    "test": "vitest run",
+    "deploy": "bunx wrangler deploy",
+    "cron": "wrangler dev --test-scheduled"
   },
   "dependencies": {
     "@effect/platform": "^0.55.1",
@@ -48,6 +50,7 @@
     "lint-staged": "^15.2.2",
     "miniflare": "^3.20240524.1",
     "rimraf": "^5.0.7",
+    "vitest": "^1.6.0",
     "wrangler": "^3.57.2"
   },
   "module": "index.ts",
