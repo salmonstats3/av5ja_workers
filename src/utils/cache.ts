@@ -10,7 +10,10 @@ export namespace KVCache {
   }
 
   export const get = async (c: Context<{ Bindings: Bindings }>): Promise<CacheResult> => {
-    const { value, metadata } = await c.env.Cache.getWithMetadata<CacheMetadata>(c.req.url)
+    const url: URL = new URL(c.req.url)
+    const { hostname, pathname } = url
+    console.log(hostname, pathname)
+    const { value, metadata } = await c.env.Cache.getWithMetadata<CacheMetadata>(`${hostname}${pathname}`)
     if (value === null || metadata === null) {
       // console.log('[KV]: ->', 'EXPIRES_IN:', 'NULL', 'VALUE:', 'NULL')
       return {
@@ -27,8 +30,10 @@ export namespace KVCache {
 
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   export const put = async (c: Context<{ Bindings: Bindings }>, value: any): Promise<void> => {
+    const url: URL = new URL(c.req.url)
+    const { hostname, pathname } = url
     const expiresIn: string = dayjs().add(30, 'minute').toISOString()
     // console.log('[KV]: <-', 'EXPIRES_IN:', expiresIn)
-    await c.env.Cache.put(c.req.url, JSON.stringify(value), { metadata: { expiresIn: expiresIn } })
+    await c.env.Cache.put(`${hostname}${pathname}`, JSON.stringify(value), { metadata: { expiresIn: expiresIn } })
   }
 }

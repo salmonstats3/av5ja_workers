@@ -9,7 +9,7 @@ import { type Context, type Env, Hono } from 'hono'
 export const schedules = new Hono<{ Bindings: Bindings }>()
 
 const store = async (c: Context<{ Bindings: Bindings }>): Promise<CoopSchedule.Response[]> => {
-  console.log('[CACHE]: FETCH')
+  // console.log('[CACHE]: FETCH')
   const keys: string[] = (await c.env.Schedule.list()).keys.map((key) => key.name)
   const schedules: CoopSchedule.Response[] = (await Promise.all(keys.map((key) => c.env.Schedule.get(key))))
     .filter((value) => value !== null)
@@ -22,11 +22,11 @@ const store = async (c: Context<{ Bindings: Bindings }>): Promise<CoopSchedule.R
 schedules.get('/', async (c) => {
   const { cache, isExpired } = await KVCache.get(c)
   if (isExpired) {
-    console.log('[CACHE]: EXPIRED/MISS')
+    // console.log('[CACHE]: EXPIRED/MISS')
     c.executionCtx.waitUntil(store(c))
   }
   if (cache !== null) {
-    console.log('[CACHE]: HIT')
+    // console.log('[CACHE]: HIT')
     return c.json({ schedules: JSON.parse(cache) })
   }
   // 最初の一回だけここが実行される
