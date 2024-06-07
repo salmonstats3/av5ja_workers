@@ -21,7 +21,7 @@
     "format": "bunx @biomejs/biome format src",
     "format:fix": "bunx @biomejs/biome format --write src",
     "check": "bunx @biomejs/biome check src",
-    "check:fix": "bunx @biomejs/biome check --apply src",
+    "check:fix": "bunx @biomejs/biome check --write src",
     "prepare": "husky",
     "test": "vitest run",
     "deploy": "bunx wrangler deploy",
