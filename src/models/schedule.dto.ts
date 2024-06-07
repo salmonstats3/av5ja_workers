@@ -6,7 +6,63 @@ import { WeaponInfoMain } from '@/enums/main'
 import { scheduleHash } from '@/utils/hash'
 import { Schema as S } from '@effect/schema'
 import dayjs from 'dayjs'
-import { ImageURLId, IntFromBase64, Nullable } from './common.dto'
+import { ISO8601String, ImageURLId, IntFromBase64, Nullable, UndefinedToNull } from './common.dto'
+
+export namespace ThunderSchedule {
+  const BossId = S.transform(S.Union(S.String, S.Undefined), Nullable(S.Enums(CoopBossInfo.Id)), {
+    decode: (input) => {
+      switch (input) {
+        case 'SakelienGiant':
+          return CoopBossInfo.Id.SakelienGiant
+        case 'SakeRope':
+          return CoopBossInfo.Id.SakeRope
+        case 'SakeJaw':
+          return CoopBossInfo.Id.SakeJaw
+        case 'Random':
+          return CoopBossInfo.Id.Random
+        case 'Triple':
+          return CoopBossInfo.Id.Triple
+        default:
+          return null
+      }
+    },
+    encode: (input) => {
+      switch (input) {
+        case CoopBossInfo.Id.SakelienGiant:
+          return 'SakelienGiant'
+        case CoopBossInfo.Id.SakeRope:
+          return 'SakeRope'
+        case CoopBossInfo.Id.SakeJaw:
+          return 'SakeJaw'
+        case CoopBossInfo.Id.Random:
+          return 'Random'
+        case CoopBossInfo.Id.Triple:
+          return 'Triple'
+        default:
+          return 'Unknown'
+      }
+    }
+  })
+
+  const Schedule = S.Struct({
+    startTime: S.DateFromString,
+    endTime: S.DateFromString,
+    stageId: S.propertySignature(S.Enums(CoopStage.Id)).pipe(S.fromKey('stage')),
+    bossId: S.propertySignature(S.Union(BossId, S.Undefined)).pipe(S.fromKey('bigBoss')),
+    // mode: S.Enums(CoopMode),
+    // rule: S.Enums(CoopRule)
+    weaponList: S.propertySignature(S.Array(S.Enums(WeaponInfoMain.Id))).pipe(S.fromKey('weapons')),
+    rareWeapons: S.Array(S.Enums(WeaponInfoMain.Id))
+  })
+
+  export const Query = S.Struct({
+    Normal: S.Array(Schedule),
+    BigRun: S.Array(Schedule),
+    TeamContest: S.Array(Schedule)
+  })
+
+  export type Query = typeof Query.Type
+}
 
 export namespace StageSchedule {
   const Node = S.Struct({
@@ -45,8 +101,8 @@ export namespace CoopSchedule {
    */
   export const Query = S.Struct({
     id: S.String,
-    startTime: Nullable(S.DateFromString),
-    endTime: Nullable(S.DateFromString),
+    startTime: ISO8601String,
+    endTime: ISO8601String,
     mode: S.Enums(CoopMode),
     rule: S.Enums(CoopRule),
     bossId: Nullable(S.Enums(CoopBossInfo.Id)),
@@ -98,6 +154,23 @@ export namespace CoopSchedule {
       this.stageId = options.stageId
       this.rareWeapons = options.rareWeapons
       this.weaponList = options.weaponList
+    }
+
+    static from(schedule: ThunderSchedule.Query): CoopSchedule.Response[] {
+      return [
+        schedule.Normal.map(
+          // @ts-ignore
+          (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.REGULAR, rule: CoopRule.REGULAR })
+        ),
+        schedule.BigRun.map(
+          // @ts-ignore
+          (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.REGULAR, rule: CoopRule.BIG_RUN })
+        ),
+        schedule.TeamContest.map(
+          // @ts-ignore
+          (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.LIMITED, rule: CoopRule.TEAM_CONTEST })
+        )
+      ].flat()
     }
   }
 

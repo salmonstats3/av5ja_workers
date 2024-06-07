@@ -12,6 +12,27 @@ import { HTTPException } from 'hono/http-exception'
  */
 export const Nullable = <T extends S.Schema.Any>(self: T): S.NullOr<T> => S.Union(self, S.Null)
 
+export const ISO8601String = S.transform(S.NullishOr(S.String), Nullable(S.String), {
+  decode: (input) => {
+    if (input === undefined) {
+      return null
+    }
+    if (dayjs(input).isValid()) {
+      return dayjs(input).toISOString()
+    }
+    throw new HTTPException(400, { message: 'Invalid Date Format' })
+  },
+  encode: (input) => {
+    if (input === null || input === undefined) {
+      return null
+    }
+    if (dayjs(input).isValid()) {
+      return dayjs(input).toISOString()
+    }
+    throw new HTTPException(400, { message: 'Invalid Date Format' })
+  }
+})
+
 /**
  * @description
  * クレデンシャル情報をURLから削除する
