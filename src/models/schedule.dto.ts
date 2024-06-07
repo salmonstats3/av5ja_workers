@@ -6,7 +6,7 @@ import { WeaponInfoMain } from '@/enums/main'
 import { scheduleHash } from '@/utils/hash'
 import { Schema as S } from '@effect/schema'
 import dayjs from 'dayjs'
-import { ImageURLId, IntFromBase64, Nullable } from './common.dto'
+import { ISO8601String, ImageURLId, IntFromBase64, Nullable, UndefinedToNull } from './common.dto'
 
 export namespace ThunderSchedule {
   const BossId = S.transform(S.Union(S.String, S.Undefined), Nullable(S.Enums(CoopBossInfo.Id)), {
@@ -101,8 +101,8 @@ export namespace CoopSchedule {
    */
   export const Query = S.Struct({
     id: S.String,
-    startTime: Nullable(S.DateFromString),
-    endTime: Nullable(S.DateFromString),
+    startTime: ISO8601String,
+    endTime: ISO8601String,
     mode: S.Enums(CoopMode),
     rule: S.Enums(CoopRule),
     bossId: Nullable(S.Enums(CoopBossInfo.Id)),
@@ -158,16 +158,16 @@ export namespace CoopSchedule {
 
     static from(schedule: ThunderSchedule.Query): CoopSchedule.Response[] {
       return [
-        // @ts-ignore
         schedule.Normal.map(
+          // @ts-ignore
           (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.REGULAR, rule: CoopRule.REGULAR })
         ),
-        // @ts-ignore
         schedule.BigRun.map(
+          // @ts-ignore
           (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.REGULAR, rule: CoopRule.BIG_RUN })
         ),
-        // @ts-ignore
         schedule.TeamContest.map(
+          // @ts-ignore
           (schedule) => new CoopSchedule.Response({ ...schedule, mode: CoopMode.LIMITED, rule: CoopRule.TEAM_CONTEST })
         )
       ].flat()
