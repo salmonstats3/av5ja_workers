@@ -6,6 +6,7 @@ import { WeaponInfoSpecial } from '@/enums/special'
 import type { Species } from '@/enums/species'
 import { playerHash, resultHash, waveHash } from '@/utils/hash'
 import { Schema as S } from '@effect/schema'
+import { B } from 'vitest/dist/reporters-yx5ZTtEV.js'
 import type { PlayerId, ResultId } from './common.dto'
 import { CoopHistoryDetail } from './history_detail'
 import { CoopSchedule } from './schedule.dto'
@@ -81,6 +82,16 @@ export namespace CoopResult {
     constructor(nameplate: CoopHistoryDetail.Nameplate) {
       this.badges = nameplate.badges.map((badge) => badge?.id ?? null)
       this.background = new Background(nameplate.background)
+    }
+  }
+
+  export class BossResult {
+    readonly hasDefeatBoss: boolean
+    readonly bossId: CoopBossInfo.Id
+
+    constructor(bossResult: CoopHistoryDetail.BossResult) {
+      this.hasDefeatBoss = bossResult.hasDefeatBoss
+      this.bossId = bossResult.boss.id
     }
   }
 
@@ -200,6 +211,7 @@ export namespace CoopResult {
     readonly myResult: MemberResult
     readonly otherResults: MemberResult[]
     readonly jobResult: JobResult
+    readonly bossResults: BossResult[] | null
     readonly playTime: Date
     readonly bossCounts: number[]
     readonly bossKillCounts: number[]
@@ -238,6 +250,7 @@ export namespace CoopResult {
         bossId: history.result.bossResult?.boss.id ?? null,
         isBossDefeated: history.result.bossResult?.hasDefeatBoss ?? null
       })
+      this.bossResults = history.result.bossResults?.map((bossResult) => new BossResult(bossResult)) ?? null
 
       const bossCounts: number[] = Object.values(CoopEnemyInfo.Id)
         // biome-ignore lint/suspicious/noGlobalIsNan: <explanation>
@@ -268,7 +281,7 @@ export namespace CoopResult {
       this.myResult = new MemberResult(history.result.myResult, history.result.waveResults, {
         isMyself: true,
         jobScore: history.result.jobScore,
-        gradeId: history.result.afterGrade.id,
+        gradeId: history.result.afterGrade?.id ?? null,
         kumaPoint: history.result.jobPoint,
         gradePoint: history.result.afterGradePoint,
         smellMeter: history.result.smellMeter,

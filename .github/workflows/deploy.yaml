@@ -17,7 +17,7 @@ jobs:
       - name: Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: latest
+          bun-version: 1.1.10
           no-cache: false
 
       - name: Install
@@ -30,7 +30,7 @@ jobs:
           bun run lint
 
   deploy:
-    needs: build
+    needs: format
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,5 +48,6 @@ jobs:
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          accountId: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          wranglerVersion: "3.57.2"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

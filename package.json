@@ -20,8 +20,12 @@
     "lint:fix": "bunx @biomejs/biome lint --apply src",
     "format": "bunx @biomejs/biome format src",
     "format:fix": "bunx @biomejs/biome format --write src",
+    "check": "bunx @biomejs/biome check src",
+    "check:fix": "bunx @biomejs/biome check --write src",
     "prepare": "husky",
-    "deploy": "bunx wrangler deploy"
+    "test": "vitest run",
+    "deploy": "bunx wrangler deploy",
+    "cron": "wrangler dev --test-scheduled"
   },
   "dependencies": {
     "@effect/platform": "^0.55.1",
@@ -31,7 +35,7 @@
     "hono": "^4.3.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.7.3",
+    "@biomejs/biome": "^1.8.0",
     "@cloudflare/vitest-pool-workers": "^0.4.0",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
@@ -48,6 +52,7 @@
     "lint-staged": "^15.2.2",
     "miniflare": "^3.20240524.1",
     "rimraf": "^5.0.7",
+    "vitest": "^1.6.0",
     "wrangler": "^3.57.2"
   },
   "module": "index.ts",

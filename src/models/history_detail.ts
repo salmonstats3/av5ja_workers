@@ -89,10 +89,11 @@ export namespace CoopHistoryDetail {
 
   export const CoopHistoryDetail = S.Struct({
     id: ResultIdFromString,
-    afterGrade: IntId({ prefix: 'CoopGrade' }),
+    afterGrade: Nullable(IntId({ prefix: 'CoopGrade' })),
     myResult: MemberResult,
     memberResults: S.Array(MemberResult),
     bossResult: Nullable(BossResult),
+    bossResults: Nullable(S.Array(BossResult)),
     enemyResults: S.Array(EnemyResult),
     waveResults: S.Array(WaveResult),
     resultWave: S.Int,
@@ -103,7 +104,7 @@ export namespace CoopHistoryDetail {
     scenarioCode: Nullable(S.String),
     smellMeter: Nullable(S.Int),
     weapons: S.Array(ImageURL),
-    boss: IntId({ prefix: 'CoopEnemy' }),
+    boss: Nullable(IntId({ prefix: 'CoopEnemy' })),
     afterGradePoint: Nullable(S.Int),
     scale: Nullable(Scale),
     jobPoint: Nullable(S.Int),
@@ -122,6 +123,7 @@ export namespace CoopHistoryDetail {
     data: Data
   })
 
+  export type BossResult = typeof BossResult.Type
   export type HistoryDetail = typeof CoopHistoryDetail.Type
   export type WaveResult = typeof WaveResult.Type
   export type MemberResult = typeof MemberResult.Type
