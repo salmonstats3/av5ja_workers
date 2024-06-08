@@ -1,5 +1,6 @@
 export enum CoopTrophy {
   GOLD = 'GOLD',
   SILVER = 'SILVER',
-  BRONZE = 'BRONZE'
+  BRONZE = 'BRONZE',
+  NORMAL = 'NORMAL'
 }
