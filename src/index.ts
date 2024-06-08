@@ -13,6 +13,7 @@ import { records } from './records'
 import { results } from './results'
 import { schedules, update } from './schedules'
 import type { Bindings } from './utils/bindings'
+import { send_log } from './utils/discord'
 import { version } from './version'
 
 export const app = new Hono<{ Bindings: Bindings }>()
@@ -26,20 +27,12 @@ app.use(csrf())
 app.use('*', cors())
 // app.use(compress());
 app.onError((error, c) => {
-  console.error(error)
   if (error instanceof HTTPException) {
+    c.executionCtx.waitUntil(send_log(c, error))
     return c.json({ message: error.message, description: error.cause }, error.status)
   }
   return c.json({ message: 'Internal Server Error' }, 500)
 })
-
-// app.get(
-//   '*',
-//   cache({
-//     cacheName: 'av5ja',
-//     cacheControl: 'max-age=3600'
-//   })
-// )
 
 app.route('/v3/schedules', schedules)
 app.route('/v3/results', results)
