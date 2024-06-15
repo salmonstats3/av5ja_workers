@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { CoopSchedule, ThunderSchedule } from '@/models/schedule.dto'
 import type { Bindings } from '@/utils/bindings'
 import { KVCache } from '@/utils/cache'
@@ -5,14 +6,14 @@ import * as Http from '@effect/platform/HttpClient'
 import dayjs, { Dayjs } from 'dayjs'
 import { Effect } from 'effect'
 import { type Context, type Env, Hono } from 'hono'
+import dummy from './dummy.json'
 
 export const schedules = new Hono<{ Bindings: Bindings }>()
 
 const store = async (c: Context<{ Bindings: Bindings }>): Promise<CoopSchedule.Response[]> => {
-  // console.log('[CACHE]: FETCH')
   const keys: string[] = (await c.env.Schedule.list()).keys.map((key) => key.name)
   const schedules: CoopSchedule.Response[] = (await Promise.all(keys.map((key) => c.env.Schedule.get(key))))
-    .filter((value) => value !== null)
+    .filter((value): value is string => value !== null)
     .map((value) => JSON.parse(value))
     .sort((a, b) => dayjs(b.startTime).utc().unix() - dayjs(a.startTime).utc().unix())
   await KVCache.put(c, schedules)
@@ -33,6 +34,31 @@ schedules.get('/', async (c) => {
   const schedules: CoopSchedule.Response[] = await store(c)
   return c.json({ schedules: schedules })
 })
+
+schedules.put('/', async (c) => {
+  const query = Promise.all(
+    dummy.schedules.map((schedule) => {
+      const key: string = `${dayjs(schedule.startTime).toISOString()}:${dayjs(schedule.endTime).toISOString()}`
+      schedule.id = createHash('md5').update(key).digest('hex')
+      console.log(schedule)
+      return c.env.Schedule.put(key, JSON.stringify(schedule))
+    })
+  )
+  c.executionCtx.waitUntil(query)
+  return c.json({ message: 'OK' })
+})
+
+// schedules.delete('/', async (c) => {
+//   const keys: string[] = (await c.env.Schedule.list()).keys.map((key) => key.name)
+//   const query = Promise.all(keys.map((key) => c.env.Schedule.delete(key)))
+//   c.executionCtx.waitUntil(query)
+//   return c.json({ message: 'OK' })
+// })
+
+// schedules.patch('/', async (c) => {
+//   c.executionCtx.waitUntil(store(c))
+//   return c.json({ message: 'OK' })
+// })
 
 /**
  * @todo
