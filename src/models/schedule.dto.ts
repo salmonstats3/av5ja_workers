@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { CoopBossInfo } from '@/enums/coop_enemy'
 import { CoopMode } from '@/enums/coop_mode'
 import { CoopRule } from '@/enums/coop_rule'
@@ -6,7 +7,7 @@ import { WeaponInfoMain } from '@/enums/main'
 import { scheduleHash } from '@/utils/hash'
 import { Schema as S } from '@effect/schema'
 import dayjs from 'dayjs'
-import { ISO8601String, ImageURLId, IntFromBase64, Nullable, UndefinedToNull } from './common.dto'
+import { ISO8601String, ImageURLId, IntFromBase64, Nullable } from './common.dto'
 
 export namespace ThunderSchedule {
   const BossId = S.transform(S.Union(S.String, S.Undefined), Nullable(S.Enums(CoopBossInfo.Id)), {
@@ -132,7 +133,8 @@ export namespace CoopSchedule {
       if (this.startTime === null || this.endTime === null) {
         throw new Error('Writing to KV for private jobs is not allowed.')
       }
-      return `${dayjs(this.startTime).utc().unix()}_${dayjs(this.endTime).utc().unix()}`
+      const key: string = `${dayjs(this.startTime).toISOString()}:${dayjs(this.endTime).toISOString()}`
+      return createHash('md5').update(key).digest('hex')
     }
 
     constructor(options: {
