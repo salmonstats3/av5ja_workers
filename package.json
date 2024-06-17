@@ -25,7 +25,8 @@
     "prepare": "husky",
     "test": "vitest run",
     "deploy": "bunx wrangler deploy",
-    "cron": "wrangler dev --test-scheduled"
+    "cron": "wrangler dev --test-scheduled",
+    "server": "ngrok http --domain=pleasant-valid-hound.ngrok-free.app 33007"
   },
   "dependencies": {
     "@effect/platform": "^0.55.1",

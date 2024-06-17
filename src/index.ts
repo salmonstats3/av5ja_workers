@@ -15,6 +15,7 @@ import { schedules, update } from './schedules'
 import type { Bindings } from './utils/bindings'
 import { send_log } from './utils/discord'
 import { version } from './version'
+import { webhook } from './webhook'
 
 export const app = new Hono<{ Bindings: Bindings }>()
 
@@ -39,6 +40,7 @@ app.route('/v3/results', results)
 app.route('/v1/histories', histories)
 app.route('/v1/records', records)
 app.route('/v1/version', version)
+app.route('/v1/webhook', webhook)
 
 export default {
   port: 3000,
