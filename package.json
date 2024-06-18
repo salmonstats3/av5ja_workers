@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "start": "wrangler dev --port 33007",
+    "start": "wrangler dev",
     "start:prod": "bun dist/index.js",
     "prebuild": "rimraf dist",
     "build": "bun build src/index.ts --minify --outdir dist --outfile=index.js",
