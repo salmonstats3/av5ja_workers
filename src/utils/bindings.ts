@@ -6,4 +6,5 @@ export type Bindings = {
   DISCORD_WEBHOOK_URL: string
   PAYPAL_CLIENT_ID: string
   PAYPAL_CLIENT_SECRET: string
+  PAYPAL_WEBHOOK_ID: string
 }
