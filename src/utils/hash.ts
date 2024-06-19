@@ -5,7 +5,6 @@ import type { CoopRule } from '@/enums/coop_rule'
 import type { CoopStage } from '@/enums/coop_stage'
 import type { WeaponInfoMain } from '@/enums/main'
 import type { PlayerId, ResultId } from '@/models/common.dto'
-import type { CoopSchedule } from '@/models/schedule.dto'
 import dayjs from 'dayjs'
 
 export const scheduleHash = (options: {
@@ -23,13 +22,7 @@ export const scheduleHash = (options: {
         .update(`${options.mode}-${options.rule}-${options.stageId}-${options.weaponList.join(',')}`)
         .digest('hex')
     : createHash('md5')
-        .update(
-          `${options.mode}-${options.rule}-${options.stageId}-${dayjs(options.startTime).utc().unix()}-${dayjs(
-            options.endTime
-          )
-            .utc()
-            .unix()}-${options.weaponList.join(',')}`
-        )
+        .update(`${dayjs(options.startTime).toISOString()}:${dayjs(options.endTime).toISOString()}`)
         .digest('hex')
 }
 
