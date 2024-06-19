@@ -133,8 +133,7 @@ export namespace CoopSchedule {
       if (this.startTime === null || this.endTime === null) {
         throw new Error('Writing to KV for private jobs is not allowed.')
       }
-      const key: string = `${dayjs(this.startTime).toISOString()}:${dayjs(this.endTime).toISOString()}`
-      return createHash('md5').update(key).digest('hex')
+      return `${dayjs(this.startTime).toISOString()}:${dayjs(this.endTime).toISOString()}`
     }
 
     constructor(options: {
