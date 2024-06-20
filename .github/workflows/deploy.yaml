@@ -3,7 +3,6 @@ name: Continuous Deployment
 on:
   push:
     branches:
-      - '**'
       - 'main'
       - 'master'
 
@@ -47,7 +46,8 @@ jobs:
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
+        if: github.ref == 'refs/heads/master'
         with:
-          wranglerVersion: "3.59.0"
+          wranglerVersion: "3.61.0"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

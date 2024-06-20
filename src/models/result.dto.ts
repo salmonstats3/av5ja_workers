@@ -238,7 +238,13 @@ export namespace CoopResult {
       this.id = history.result.id
       this.hash = resultHash(history.result.id)
       this.uuid = history.result.id.uuid
-      this.schedule = history.schedule
+      // @ts-ignore
+      this.schedule = {
+        ...history.schedule,
+        ...{
+          stageId: history.result.coopStage.id
+        }
+      }
       this.scale =
         history.result.scale === null
           ? [null, null, null]

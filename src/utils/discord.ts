@@ -43,7 +43,6 @@ export const send_log = async (c: Context<{ Bindings: Bindings }>, exception: HT
     'body.json'
   )
   data.append('payload_json', JSON.stringify(content))
-  console.log(c.env)
   await fetch(c.env.DISCORD_WEBHOOK_URL, {
     body: data,
     method: 'POST'
