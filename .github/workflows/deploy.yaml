@@ -46,6 +46,7 @@ jobs:
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
+        if: github.ref == 'refs/heads/master'
         with:
           wranglerVersion: "3.61.0"
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
