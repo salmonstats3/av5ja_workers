@@ -4,4 +4,5 @@ tunnels:
     proto: http
     addr: host.docker.internal:8787
     host_header: rewrite
-    domain: ${NGROK_DOMAIN}
+    domain: pleasant-valid-hound.ngrok-free.app
+    # domain: ${NGROK_DOMAIN}

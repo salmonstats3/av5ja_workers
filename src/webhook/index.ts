@@ -7,7 +7,6 @@ import { HTTPException } from 'hono/http-exception'
 export const webhook = new Hono<{ Bindings: Bindings }>()
 
 webhook.post('/', async (c) => {
-  console.log('WEBHOOK RECEIVED')
   await verify(c)
   return c.json({})
 })
@@ -15,11 +14,10 @@ webhook.post('/', async (c) => {
 const get_access_token = async (c: Context<{ Bindings: Bindings }>): Promise<string> => {
   const client_id: string = c.env.PAYPAL_CLIENT_ID
   const client_secret: string = c.env.PAYPAL_CLIENT_SECRET
-  console.log(client_id, client_secret)
   const authorization: string = btoa(`${client_id}:${client_secret}`)
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const response: any = await (
-    await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
+    await fetch(`${c.env.PAYPAL_API_URL}/v1/oauth2/token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -28,7 +26,7 @@ const get_access_token = async (c: Context<{ Bindings: Bindings }>): Promise<str
       body: 'grant_type=client_credentials'
     })
   ).json()
-  console.log(response)
+  console.log('ACCESS TOKEN', response)
   return response.access_token
 }
 
@@ -36,28 +34,32 @@ const verify_signature = async (c: Context<{ Bindings: Bindings }>, access_token
   const webhook_id: string = c.env.PAYPAL_WEBHOOK_ID
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   const payload: any = await c.req.json()
+  console.log('PAYLOAD', payload)
   const signature: string | undefined = c.req.header('paypal-transmission-sig')
   const timestamp: string | undefined = c.req.header('paypal-transmission-time')
   const algorithm: string | undefined = c.req.header('paypal-auth-algo')
   const cert_url: string | undefined = c.req.header('paypal-cert-url')
   const transmission_id: string | undefined = c.req.header('paypal-transmission-id')
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-  const response: any = await fetch('https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${access_token}`
-    },
-    body: JSON.stringify({
-      transmission_id: transmission_id,
-      transmission_time: timestamp,
-      webhook_id: webhook_id,
-      transmission_sig: signature,
-      cert_url: cert_url,
-      auth_algo: algorithm,
-      webhook_event: payload
-    })
-  })
+  const response: any = await fetch(
+    `${c.env.PAYPAL_API_URL}/v1/oauth2/token/v1/notifications/verify-webhook-signature`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${access_token}`
+      },
+      body: JSON.stringify({
+        transmission_id: transmission_id,
+        transmission_time: timestamp,
+        webhook_id: webhook_id,
+        transmission_sig: signature,
+        cert_url: cert_url,
+        auth_algo: algorithm,
+        webhook_event: payload
+      })
+    }
+  )
   console.log(response)
   return response.ok
 }
