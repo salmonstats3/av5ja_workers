@@ -9,7 +9,7 @@ import { HTTPException } from 'hono/http-exception'
 export const results = new Hono<{ Bindings: Bindings }>()
 
 results.get('/', async (c) => {
-  const keys: string[] = (await c.env.Result.list()).keys.map((key) => key.name)
+  const keys: string[] = (await c.env.Result.list({ limit: 50 })).keys.map((key) => key.name)
   const values: object[] = (await Promise.all(keys.map((key) => c.env.Result.get(key))))
     .filter((value): value is string => value !== null)
     .map((value) => JSON.parse(value))
@@ -18,7 +18,7 @@ results.get('/', async (c) => {
 
 results.get('/:key', async (c) => {
   const nplnUserId: string = c.req.param('key')
-  const keys: string[] = (await c.env.Result.list({ prefix: nplnUserId })).keys.map((key) => key.name)
+  const keys: string[] = (await c.env.Result.list({ prefix: nplnUserId, limit: 50 })).keys.map((key) => key.name)
   const values: object[] = (await Promise.all(keys.map((key) => c.env.Result.get(key))))
     .filter((value): value is string => value !== null)
     .map((value) => JSON.parse(value))

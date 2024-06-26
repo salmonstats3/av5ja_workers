@@ -31,8 +31,6 @@
   "dependencies": {
     "@effect/platform": "^0.55.1",
     "@effect/schema": "^0.67.15",
-    "@hono/swagger-ui": "^0.2.2",
-    "@paypal/checkout-server-sdk": "^1.0.3",
     "dayjs": "^1.11.11",
     "hono": "^4.3.7"
   },
@@ -56,11 +54,11 @@
     "miniflare": "^3.20240524.1",
     "rimraf": "^5.0.7",
     "vitest": "^1.6.0",
-    "wrangler": "^3.57.2"
+    "wrangler": "^3.62.0"
   },
   "module": "index.ts",
   "type": "module",
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.5.2"
   }
 }
