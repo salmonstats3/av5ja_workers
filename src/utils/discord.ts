@@ -2,7 +2,6 @@ import dayjs from 'dayjs'
 import type { Context } from 'hono'
 import type { HTTPException } from 'hono/http-exception'
 import type Stripe from 'stripe'
-import { InlayHintKind } from 'typescript'
 import type { Bindings } from './bindings'
 
 export namespace Discord {

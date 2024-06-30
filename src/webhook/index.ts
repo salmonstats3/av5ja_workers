@@ -21,6 +21,7 @@ const verify_signature = async (c: Context<{ Bindings: Bindings }>): Promise<boo
   const body: string = await c.req.text()
   try {
     const event: Stripe.Event = await stripe.webhooks.constructEventAsync(body, signature, c.env.STRIPE_WEBHOOK_SECRET)
+    console.log(event.type)
     switch (event.type) {
       // セッション成功
       case EventType.CHECKOUT_SESSION_COMPLETED:
@@ -33,7 +34,7 @@ const verify_signature = async (c: Context<{ Bindings: Bindings }>): Promise<boo
         break
       // サブスクリプションの更新
       case EventType.CUSTOMER_SUBSCRIPTION_UPDATED:
-        Discord.Subscribe(c, event)
+        c.executionCtx.waitUntil(Discord.Subscribe(c, event))
         break
       // 支払い失敗
       case EventType.INVOICE_PAYMENT_FAILED:
