@@ -3,9 +3,9 @@ export type Bindings = {
   Result: KVNamespace
   Cache: KVNamespace
   History: KVNamespace
+  Subscription: KVNamespace
   DISCORD_WEBHOOK_URL: string
-  PAYPAL_CLIENT_ID: string
-  PAYPAL_CLIENT_SECRET: string
-  PAYPAL_WEBHOOK_ID: string
-  PAYPAL_API_URL: string
+  DISCORD_WEBHOOK_SUBSCRIBE_URL: string
+  STRIPE_WEBHOOK_SECRET: string
+  STRIPE_SECRET_KEY: string
 }

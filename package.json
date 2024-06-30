@@ -32,7 +32,8 @@
     "@effect/platform": "^0.55.1",
     "@effect/schema": "^0.67.15",
     "dayjs": "^1.11.11",
-    "hono": "^4.3.7"
+    "hono": "^4.3.7",
+    "stripe": "^16.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.0",
