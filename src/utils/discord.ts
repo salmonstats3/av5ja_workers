@@ -18,12 +18,22 @@ export namespace Discord {
             {
               name: 'Id',
               value: event.id,
-              inline: true
+              inline: false
             },
             {
               name: 'Type',
               value: event.type,
-              inline: true
+              inline: false
+            },
+            {
+              name: 'StartTime',
+              value: dayjs(event.data.object.current_period_start * 1000).toISOString(),
+              inline: false
+            },
+            {
+              name: 'EndTime',
+              value: dayjs(event.data.object.current_period_end * 1000).toISOString(),
+              inline: false
             },
             {
               name: 'Version',
@@ -33,16 +43,6 @@ export namespace Discord {
             {
               name: 'Currency',
               value: event.data.object.currency,
-              inline: true
-            },
-            {
-              name: 'StartTime',
-              value: dayjs(event.data.object.current_period_start * 1000).toISOString(),
-              inline: true
-            },
-            {
-              name: 'EndTime',
-              value: dayjs(event.data.object.current_period_end * 1000).toISOString(),
               inline: true
             },
             {
