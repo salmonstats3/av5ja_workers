@@ -1,5 +1,4 @@
 import type { Bindings } from '@/utils/bindings'
-import dayjs from 'dayjs'
 import { Hono } from 'hono'
 
 export const version = new Hono<{ Bindings: Bindings }>()

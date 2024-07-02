@@ -1,6 +1,7 @@
 import { EventType } from '@/enums/event_type'
 import type { Bindings } from '@/utils/bindings'
 import { Discord } from '@/utils/discord'
+import dayjs from 'dayjs'
 import { type Context, Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import Stripe from 'stripe'
@@ -11,6 +12,42 @@ webhook.post('/', async (c) => {
   const is_verified: boolean = await verify_signature(c)
   return c.json({ verified: is_verified })
 })
+
+const get_subscription = async (
+  c: Context<{ Bindings: Bindings }>,
+  event: Stripe.CheckoutSessionCompletedEvent
+): Promise<Stripe.Subscription> => {
+  const stripe: Stripe = new Stripe(c.env.STRIPE_SECRET_KEY)
+  const subscription: string | Stripe.Subscription | null = event.data.object.subscription
+  if (subscription === null) {
+    throw new HTTPException(400, { message: 'Bad Request' })
+  }
+  return await stripe.subscriptions.retrieve(subscription.toString())
+}
+
+const activate = async (
+  c: Context<{ Bindings: Bindings }>,
+  event: Stripe.CheckoutSessionCompletedEvent
+): Promise<void> => {
+  const npln_user_id: string | null = event.data.object.client_reference_id
+  if (npln_user_id === null) {
+    return
+  }
+  const subscription: Stripe.Subscription = await get_subscription(c, event)
+  const active: boolean = subscription.status === 'active'
+  const period_start: string = dayjs.unix(subscription.current_period_start).toISOString()
+  const period_end: string = dayjs.unix(subscription.current_period_end).toISOString()
+  const plan: string = subscription.items.data[0].plan.id
+  await c.env.Status.put(
+    npln_user_id,
+    JSON.stringify({
+      active: active,
+      period_start: period_start,
+      period_end: period_end,
+      plan: plan
+    })
+  )
+}
 
 const verify_signature = async (c: Context<{ Bindings: Bindings }>): Promise<boolean> => {
   const stripe: Stripe = new Stripe(c.env.STRIPE_SECRET_KEY)
@@ -25,6 +62,7 @@ const verify_signature = async (c: Context<{ Bindings: Bindings }>): Promise<boo
     switch (event.type) {
       // セッション成功
       case EventType.CHECKOUT_SESSION_COMPLETED:
+        c.executionCtx.waitUntil(activate(c, event))
         break
       // サブスクリプションの作成
       case EventType.CUSTOMER_SUBSCRIPTION_CREATED:
