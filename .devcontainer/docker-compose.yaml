@@ -4,13 +4,29 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        BUN_VERSION: 1.1.0
-        NODE_VERSION: 20.13.1
+        BUN_VERSION: 1.1.17
+        NODE_VERSION: 20.14.0
     volumes:
       - node_modules:/home/bun/app/node_modules
       - ../:/home/bun/app:cached
+    # ports:
+    #   - 8787:8787
     tty: true
     stdin_open: true
-
+  ngrok:
+    image: ngrok/ngrok:latest
+    command:
+      - start
+      - --all
+      - --config
+      - /etc/ngrok.yml
+    ports:
+      - 4040:4040
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+    depends_on:
+      - hono
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
 volumes:
   node_modules:

@@ -11,10 +11,11 @@ import { scheduled } from './handler'
 import { histories } from './histories'
 import { records } from './records'
 import { results } from './results'
-import { schedules, update } from './schedules'
+import { schedules } from './schedules'
 import type { Bindings } from './utils/bindings'
-import { send_log } from './utils/discord'
+import { Discord } from './utils/discord'
 import { version } from './version'
+import { webhook } from './webhook'
 
 export const app = new Hono<{ Bindings: Bindings }>()
 
@@ -28,7 +29,7 @@ app.use('*', cors())
 // app.use(compress());
 app.onError((error, c) => {
   if (error instanceof HTTPException) {
-    c.executionCtx.waitUntil(send_log(c, error))
+    c.executionCtx.waitUntil(Discord.Logger(c, error))
     return c.json({ message: error.message, description: error.cause }, error.status)
   }
   return c.json({ message: 'Internal Server Error' }, 500)
@@ -39,6 +40,7 @@ app.route('/v3/results', results)
 app.route('/v1/histories', histories)
 app.route('/v1/records', records)
 app.route('/v1/version', version)
+app.route('/v1/webhook', webhook)
 
 export default {
   port: 3000,

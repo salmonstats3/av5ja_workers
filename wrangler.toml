@@ -9,6 +9,7 @@ kv_namespaces = [
   { binding = "History", id = "6f9e5d546f2e49738b2741724cff852f", preview_id = "be37fa48bfb24c4ba74998b0532fc9d6" },
   { binding = "Result", id = "4e90622a3c6f4d4eb7480c7b025bea0b", preview_id = "d162c2534873462498aa44c69e98b4ad" },
   { binding = "Cache", id = "f3821b86b53d49788aa330e04ddca891", preview_id = "afe7eed588ed489288ff26369ccaa124" },
+  { binding = "Status", id = "50f2d8c829b04eceb000ed5426231b76", preview_id = "4e7a39d0f09242829b51b3574295f2f7" },
 ]
 
 [triggers]
